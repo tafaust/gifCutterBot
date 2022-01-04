@@ -1,4 +1,3 @@
-import unittest
 from tempfile import NamedTemporaryFile
 
 import pytest as pytest
@@ -11,7 +10,7 @@ from src.gif_utilities import get_total_duration_milliseconds
 @pytest.fixture(params=[(0, 250), (350, 450), (1250, 934823)])
 def yield_params(request):
     params = {
-        'img': Image.open('cat.gif'),
+        'img': Image.open('tests/cat.gif'),
         'start': request.param[0],
         'end': request.param[1]
     }
