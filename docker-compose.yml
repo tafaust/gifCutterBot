@@ -1,11 +1,11 @@
-version: '2'
+version: '3'
 
 networks:
   redditbot:
 
 services:
   gifcutterbot:
-#    image: gifcutterbot:latest
+    image: gifcutterbot:latest
     build:
       dockerfile: Dockerfile
       context: .
@@ -18,10 +18,10 @@ services:
       - REDDIT_CLIENT_SECRET
       - IMGUR_CLIENT_ID
       - IMGUR_CLIENT_SECRET
-#    deploy:
-#      replicas: 1
-#      restart_policy:
-#        condition: on-failure
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
 
 #  dbpostgres:
 #    image: postgres
