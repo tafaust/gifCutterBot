@@ -20,10 +20,10 @@ from src.gif_utilities import cut_gif as cut_gif_func
 
 def run(reddit, imgur):
     # todo extend pattern
-    pattern = re.compile(r'start=([\d]+) end=([\d]+)', re.IGNORECASE)
+    pattern = re.compile(r'(s|start)=([\d]+) (e|end)=([\d]+)', re.IGNORECASE)
     params = {}
-    # todo infinite loop or cronjob
-    for m in reddit.inbox.unread(limit=None):
+    inbox = reddit.inbox.unread(limit=None)
+    for m in inbox:
         print(f'Received message: {m.body}')
         # todo queue and periodically work through queue
         # extract params
@@ -33,8 +33,8 @@ def run(reddit, imgur):
             m.mark_read()
             continue
         print(f'Found pattern matches: {matches.groups()}')
-        params['start'] = int(matches.group(1))
-        params['end'] = int(matches.group(2))
+        params['start'] = int(matches.group(2))
+        params['end'] = int(matches.group(4))
         params['img'] = Image.open(requests.get(m.submission.url, stream=True).raw)
         print(params)
         cut_gif, target_duration = cut_gif_func(**params)
@@ -92,8 +92,8 @@ if __name__ == '__main__':
     )
     imgur_instance = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
 
-    # run script every 3 seconds
-    it = IntervalTimer(3, lambda: run(reddit=reddit_instance, imgur=imgur_instance))
+    # run script every 10 seconds
+    it = IntervalTimer(10, lambda: run(reddit=reddit_instance, imgur=imgur_instance))
     try:
         it.start()  # run indefinitely
     except (InterruptedError, KeyboardInterrupt):
