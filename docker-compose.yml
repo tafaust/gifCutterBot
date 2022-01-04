@@ -1,0 +1,35 @@
+version: '3.9'
+
+networks:
+  redditbot:
+
+services:
+  gifcutterbot:
+    image: gifcutterbot:latest
+    build:
+      dockerfile: Dockerfile
+      context: .
+    networks:
+      - redditbot
+    environment:
+      - REDDIT_USERNAME
+      - REDDIT_PASSWORD
+      - REDDIT_CLIENT_ID
+      - REDDIT_CLIENT_SECRET
+      - IMGUR_CLIENT_ID
+      - IMGUR_CLIENT_SECRET
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+#  dbpostgres:
+#    image: postgres
+#    volumes:
+#      - /private/var/lib/postgresql:/var/lib/postgresql
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_USER: pguser
+#      POSTGRES_PASSWORD: pguser
+#      POSTGRES_DB: pgdb
