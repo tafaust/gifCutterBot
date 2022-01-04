@@ -4,7 +4,8 @@ from PIL.Image import Image
 from PIL.ImageDraw import ImageDraw
 
 
-noop_image = lambda image: image
+def noop_image(image):
+    return image
 
 
 class Watermark:

@@ -15,34 +15,42 @@ from config import REDDIT_CLIENT_SECRET
 from config import REDDIT_PASSWORD
 from config import REDDIT_USERNAME
 from config import USER_AGENT
-from src.gif_utilities import cut_gif
+from src.gif_utilities import cut_gif as cut_gif_func
 
 
 def run(reddit, imgur):
     # todo extend pattern
-    pattern = re.compile(r'start=([\d]+) end=([\d]+)')
+    pattern = re.compile(r'start=([\d]+) end=([\d]+)', re.IGNORECASE)
     params = {}
     # todo infinite loop or cronjob
     for m in reddit.inbox.unread(limit=None):
+        print(f'Received message: {m.body}')
         # todo queue and periodically work through queue
         # extract params
         matches = pattern.search(m.body)
+        if matches is None:
+            print('Skipping message because no match was found.')
+            m.mark_read()
+            continue
+        print(f'Found pattern matches: {matches.groups()}')
         params['start'] = int(matches.group(1))
         params['end'] = int(matches.group(2))
         params['img'] = Image.open(requests.get(m.submission.url, stream=True).raw)
         print(params)
-        cutGif, target_duration = cut_gif(**params)
+        cut_gif, target_duration = cut_gif_func(**params)
 
         with NamedTemporaryFile(mode='wb', suffix='.gif') as gif:
-            cutGif[0].save(
+            cut_gif[0].save(
                 gif,
                 save_all=True,
-                append_images=cutGif[1:],
+                append_images=cut_gif[1:],
                 optimize=False,
                 duration=target_duration,
                 loop=0
             )
+            print('Uploading to imgur...')
             res = imgur.upload_from_path(gif.name, anon=False)
+            print('Upload finished!')
         # reply with link to the just cut gif and mark as unread
         m.reply(f'Here is your cut GIF: {res.get("link")}')
         m.mark_read()  # done
