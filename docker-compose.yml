@@ -5,7 +5,7 @@ networks:
 
 services:
   gifcutterbot:
-    image: gifcutterbot:latest
+    image: reddit/gifcutterbot:latest
     build:
       dockerfile: Dockerfile
       context: .
