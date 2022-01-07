@@ -22,8 +22,11 @@ jobs:
 
     - uses: actions/checkout@v2
 
-#    - name: Build the Docker image
-#      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_REGISTRY }}/reddit/gifcutterbot:$(date +%s)
+    -
+      name: Set VERSION from file
+      run: |
+        VER=$(cat VERSION)
+        echo "VERSION=$VER" >> $GITHUB_ENV
 
     -
       name: Set up Docker Buildx
@@ -36,7 +39,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_REGISTRY }}/reddit/gifcutterbot:$(cat VERSION)
+        tags: ${{ secrets.DOCKER_REGISTRY }}/reddit/gifcutterbot:${{ env.VERSION }}
     -
       name: Build latest and push to local registry
       uses: docker/build-push-action@v2
