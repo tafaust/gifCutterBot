@@ -1,6 +1,6 @@
-[![CodeQL](https://github.com/tahesse/gifCutterBot/actions/workflows/codeql-analysis.yml/badge.svg?branch=production)](https://github.com/tahesse/gifCutterBot/actions/workflows/codeql-analysis.yml)
-[![Python application](https://github.com/tahesse/gifCutterBot/actions/workflows/python-app.yml/badge.svg?branch=production)](https://github.com/tahesse/gifCutterBot/actions/workflows/python-app.yml)
-[![Docker Image CI](https://github.com/tahesse/gifCutterBot/actions/workflows/docker-image.yml/badge.svg?branch=production)](https://github.com/tahesse/gifCutterBot/actions/workflows/docker-image.yml)
+[![CodeQL](https://github.com/tahesse/gifCutterBot/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/tahesse/gifCutterBot/actions/workflows/codeql-analysis.yml)
+[![Python application](https://github.com/tahesse/gifCutterBot/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/tahesse/gifCutterBot/actions/workflows/python-app.yml)
+[![Docker Image CI](https://github.com/tahesse/gifCutterBot/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/tahesse/gifCutterBot/actions/workflows/docker-image.yml)
 
 # Reddit _gifcutterbot_
 
