@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from PIL.Image import Image
-from PIL.ImageDraw import ImageDraw
+from PIL import ImageDraw
 
 
 def noop_image(image):
