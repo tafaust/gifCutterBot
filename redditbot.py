@@ -96,6 +96,7 @@ if __name__ == '__main__':
         client_secret=REDDIT_CLIENT_SECRET,
         username=REDDIT_USERNAME,
         password=REDDIT_PASSWORD,
+        ratelimit_seconds=60000,
     )
     root.info('Reddit client connected!')
     imgur_instance = ImgurClient(IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET)
