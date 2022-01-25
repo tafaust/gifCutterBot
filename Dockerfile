@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9.9-slim
-ENV PYTHONUNBUFFERED=1
 WORKDIR /code
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y ffmpeg
+#COPY requirements.txt requirements.txt
 COPY . .
+RUN pip install -r requirements.txt
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH='.'
 CMD ["python3", "redditbot.py"]
