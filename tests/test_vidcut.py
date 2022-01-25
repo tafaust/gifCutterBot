@@ -1,24 +1,38 @@
+import io
+import itertools
+import os
+import shutil
 from tempfile import NamedTemporaryFile
 
-import pytest as pytest
+import pytest
 from PIL import Image
 
-# from src.gif_utilities import cut_gif as cut_gif_func
 from src.gif_utilities import get_gif_duration
+# from src.video_utilities import cut_video as cut_video_func
 
 
-@pytest.fixture(params=[(0, 250), (350, 450), (1250, 934823)])
+# 934823
+# 'test.mp4',
+@pytest.fixture(params=itertools.product([0, 350, 1250], [250, 450, 3000], ['test.mov', 'test.webm']))
 def yield_params(request):
+    f = open(f'test_data/{request.param[2]}', 'r+b')
+    # f.seek(0)
+    my_bytes_io = io.BytesIO()
+    shutil.copyfileobj(f, my_bytes_io)
+    # my_bytes_io.seek(0)
     params = {
-        'img': Image.open('test_data/cat.gif'),
+        'stream': my_bytes_io,
         'start': request.param[0],
-        'end': request.param[1]
+        'end': request.param[1],
+        'ext': os.path.splitext(request.param[2])[-1][1:],  # [:1] to skip the initial dot
     }
     yield params
+    # f.close()
+    # my_bytes_io.close()
 
 
-# def test_cutgif_length(yield_params):
-#     cut_gif, target_duration = cut_gif_func(**yield_params)
+# def test_cutvideo_length(yield_params):
+#     cut_gif, target_duration = cut_video_func(**yield_params)
 #     with NamedTemporaryFile(mode='w+b', suffix='.gif') as gif:
 #         cut_gif[0].save(
 #             gif,
