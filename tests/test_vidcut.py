@@ -31,17 +31,18 @@ def yield_params(request):
     # my_bytes_io.close()
 
 
-# def test_cutvideo_length(yield_params):
-#     cut_gif, target_duration = cut_video_func(**yield_params)
-#     with NamedTemporaryFile(mode='w+b', suffix='.gif') as gif:
-#         cut_gif[0].save(
-#             gif,
-#             save_all=True,
-#             append_images=cut_gif[1:],
-#             optimize=False,
-#             duration=target_duration,
-#             loop=0
-#         )
-#         # test that there is no more deviation than 5ms per frame
-#         cut_gif_duration = target_duration * len(cut_gif)
-#         assert 0 <= abs(cut_gif_duration - get_gif_duration(image=Image.open(gif))) <= (5 * len(cut_gif))
+def test_cutvideo_length(yield_params):
+    assert True  # todo video cut tests
+    # cut_gif, target_duration = cut_video_func(**yield_params)
+    # with NamedTemporaryFile(mode='w+b', suffix='.gif') as gif:
+    #     cut_gif[0].save(
+    #         gif,
+    #         save_all=True,
+    #         append_images=cut_gif[1:],
+    #         optimize=False,
+    #         duration=target_duration,
+    #         loop=0
+    #     )
+    #     # test that there is no more deviation than 5ms per frame
+    #     cut_gif_duration = target_duration * len(cut_gif)
+    #     assert 0 <= abs(cut_gif_duration - get_gif_duration(image=Image.open(gif))) <= (5 * len(cut_gif))
