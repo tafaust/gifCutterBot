@@ -64,6 +64,7 @@ def get_vid_duration(stream: BytesIO):
     # #vid_duration = float(sp.run(len_cmd, input=stream.read(), check=True, capture_output=True, text=True).stdout)
     # * 1000
     # # proc.wait()
+    # fixme ffprobe with pipe:0 if available
     with NamedTemporaryFile(mode='wb') as vid:
         vid.write(stream.getvalue())
         len_cmd = shlex.split(f'ffprobe -show_entries format=duration -v quiet -of csv="p=0" -i {vid.name}')
@@ -73,21 +74,21 @@ def get_vid_duration(stream: BytesIO):
     return vid_duration
 
 
-def get_frame_rate(stream: BytesIO):
-    # out = sp.check_output(
-    #     [ffprobe, '/dev/stdin', "-v", "0", "-select_streams", "v", "-print_format", "flat", "-show_entries",
-    #      "stream=r_frame_rate"],
-    #     input=stream.read(), text=False)
-    # sp.check_output(cmd, input=stream.read()).decode('utf-8')
-    ffprobe = 'ffprobe'
-    cmd = shlex.split(f'{ffprobe} -i pipe:0 -v 0 -select_streams v -of flat -show_entries stream=r_frame_rate')
-    proc = sp.Popen(cmd, stdout=sp.PIPE, stdin=sp.PIPE, stderr=sp.PIPE)
-    stream.seek(0)
-    out, _ = proc.communicate(input=stream.read())
-    proc.wait()
-    rate = out.decode('utf-8').split('=')[1].strip()[1:-1].split('/')
-    if len(rate) == 1:
-        return float(rate[0])
-    if len(rate) == 2:
-        return float(rate[0]) / float(rate[1])
-    return -1
+# def get_frame_rate(stream: BytesIO):
+#     # out = sp.check_output(
+#     #     [ffprobe, '/dev/stdin', "-v", "0", "-select_streams", "v", "-print_format", "flat", "-show_entries",
+#     #      "stream=r_frame_rate"],
+#     #     input=stream.read(), text=False)
+#     # sp.check_output(cmd, input=stream.read()).decode('utf-8')
+#     ffprobe = 'ffprobe'
+#     cmd = shlex.split(f'{ffprobe} -i pipe:0 -v 0 -select_streams v -of flat -show_entries stream=r_frame_rate')
+#     proc = sp.Popen(cmd, stdout=sp.PIPE, stdin=sp.PIPE, stderr=sp.PIPE)
+#     stream.seek(0)
+#     out, _ = proc.communicate(input=stream.read())
+#     proc.wait()
+#     rate = out.decode('utf-8').split('=')[1].strip()[1:-1].split('/')
+#     if len(rate) == 1:
+#         return float(rate[0])
+#     if len(rate) == 2:
+#         return float(rate[0]) / float(rate[1])
+#     return -1

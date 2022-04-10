@@ -1,50 +1,76 @@
+import math
 import os
 import re
+from dataclasses import dataclass
 from io import BytesIO
-from typing import Dict
+from typing import Dict, Callable
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
+import PIL
 import requests
-from PIL.GifImagePlugin import GifImageFile
 from PIL.Image import Image
-from praw.models import Message
-from praw.models import Submission
+from asyncpraw.models import Message
+from asyncpraw.models import Submission
 
-from src.handler import base
-from src.handler.gif import GifCutHandler
-from src.handler.video import VideoCutHandler
+import src.handler as handler_pkg
+import src.model.result as result_pkg
+from src import gif_utilities
 from src.model.media_type import MediaType
 from src.model.task_state import TaskConfigState
 from src.model.task_state import TaskState
 from src.util import exception
-from src.util.aux import noop_image
 from src.util.aux import Watermark
+from src.util.aux import noop_image, fix_start_end_swap
 from src.util.aux import watermark_image
 from src.util.exception import TaskFailureException
 from src.util.logger import root_logger
 
 
-class TaskConfig(object):
+@dataclass
+class TaskConfig:
+    """A task configuration which is not serializable.
+
+    Attributes:
+        message         The reddit message object.
+        media_type      The media type of the resource requested for cutting.
+        start           The start time in milliseconds from where to cut the MediaType.
+        end             The end time in milliseconds to stop the cut of the MediaType.
+        watermark       An optional callable that watermarks the cut media.
+        state           The state of this :class:~`TaskConfig`.
+        is_video        A flag indicating if the media is a video.
+        is_gif          A flag indicating if the media is a gif.
+        is_crosspost    A flag indicating if the media is crossposted.
+        media_url       The url to the media.
+        duration        The total duration of the media in seconds read from the `message`.
+        extension       The file extension of the media.
+    """
+    message: Message
+    media_type: MediaType
+    start: float
+    end: Optional[float]
+    watermark: Callable[[PIL.Image.Image], PIL.Image.Image]
+
     def __init__(
-            self, message: Message, start: float, end: float, media_type: MediaType, watermark:
+            self, message: Message, start: float, end: Optional[float], media_type: MediaType, watermark:
             Optional[Watermark] = None
     ):
         self.message = message
         self.media_type = media_type
-        self.start = start
-        self.end = end
-        self.watermark = noop_image if watermark is None else lambda img: watermark_image(img, watermark)
-        self._state = TaskConfigState.VALID
-
         self.__is_video = self.media_type in [MediaType.MP4, MediaType.MOV, MediaType.WEBM]
         self.__is_gif = self.media_type == MediaType.GIF
         if hasattr(message.submission, 'crosspost_parent'):
-            self.__is_crosspost = self.message.submission.crosspost_parent is not None
+            self.__is_crosspost = message.submission.crosspost_parent is not None
         else:
             self.__is_crosspost = False
+        start_ms, end_ms = fix_start_end_swap(start=start, end=end)
+        start_ms = max(start_ms, 0)  # put a realistic lower bound on end
+        end_ms = min(end_ms or math.inf, self.duration * 1000)  # put a realistic upper bound on end
+        self.start = start_ms
+        self.end = end_ms
+        self.watermark = noop_image if watermark is None else lambda img: watermark_image(img, watermark)
+        self._state = TaskConfigState.VALID
 
         # there is no advantage in using a slotted class, thus resorting to __dict__
         # self.__dict__ = {
@@ -62,7 +88,7 @@ class TaskConfig(object):
     # def __getattr__(self, values):
     #     yield from [getattr(self, i) for i in values.split('_')]
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return f'TaskConfig(message: {self.message}, media_type: {self.media_type}, start: {self.start}, ' \
                f'end: {self.end}, watermark: {self.watermark}, state: {self.state}, is_video: {self.is_video}, ' \
                f'is_gif: {self.is_gif}, is_crosspost: {self.is_crosspost}, duration: {self.duration}, extension: ' \
@@ -93,7 +119,7 @@ class TaskConfig(object):
         _submission: Submission = self.message.submission
         if self.is_gif:
             if self.is_crosspost:
-                return ''  # dunno
+                return ''  # todo
             else:
                 return _submission.url
         elif self.is_video:
@@ -113,7 +139,16 @@ class TaskConfig(object):
         # todo do this in __init__ and store in a "_variable"
         if self.is_gif:
             # AFAIK there is no duration sent when we are dealing with a GIF
-            return None
+            with requests.get(self.media_url, stream=True) as resp:
+                if resp.ok:
+                    self._state = TaskConfigState.VALID
+                    # read whole file via StreamReader into BytesIO
+                    _stream = BytesIO(resp.raw.read())
+                    _stream.seek(0)
+                    return gif_utilities.get_gif_duration(image=PIL.Image.open(_stream))
+                else:
+                    self._state = TaskConfigState.INVALID
+                    return math.nan
         elif self.is_video:
             _submission: Submission = self.message.submission
             if self.is_crosspost:
@@ -189,7 +224,7 @@ class TaskConfigFactory(TaskConfig):
         pattern = re.compile(r'(s|start)=([\d]+) (e|end)=([\d]+)', re.IGNORECASE)
         matches = pattern.search(message.body)
         if matches is None:
-            root_logger.warn('Skipping message because no match was found.')
+            root_logger.warning('Skipping message because no match was found.')
             cls.state = TaskConfigState.INVALID
             return {}
         root_logger.debug(f'Found pattern matches: {matches.groups()}')
@@ -238,24 +273,21 @@ class Task(object):
     def _select_handler(self):
         mt: MediaType = self.__config.media_type
         if mt == MediaType.GIF:
-            self._task_handler = GifCutHandler()
+            self._task_handler = handler_pkg.gif.GifCutHandler()
         elif mt in [MediaType.MP4, MediaType.MOV, MediaType.WEBM]:
-            self._task_handler = VideoCutHandler()
+            self._task_handler = handler_pkg.video.VideoCutHandler()
         else:
             self._task_state = TaskState.DROP
             # self._task_handler = TestCutHandler()
-            root_logger.warn(f'No handler for media type: {mt}')
+            root_logger.warning(f'No handler for media type: {mt}')
 
-    def handle(self) -> Tuple[GifImageFile, float]:
+    def handle(self) -> result_pkg.Result:
         _stream: Optional[BytesIO] = self._fetch_stream()
         if self._task_state == TaskState.INVALID:
             raise TaskFailureException('Failed to fetch stream from host!')
-        image: List[Image]
-        avg_fps: float
-        image, avg_fps = self._task_handler.cut(stream=_stream, config=self.__config)
-        gif: GifImageFile = base.post_cut_hook(r=(image, avg_fps))
+        _result: result_pkg.Result = self._task_handler.cut(stream=_stream, config=self.__config)
         self._task_state = TaskState.DONE
-        return gif, avg_fps
+        return _result
 
     def _fetch_stream(self) -> Optional[BytesIO]:
         _stream: BytesIO
@@ -268,16 +300,6 @@ class Task(object):
                 self._task_state = TaskState.INVALID
                 return None
         return _stream
-        # if self.__config.is_video:
-        #     with open(f'foo.mp4', 'wb') as f:
-        #         f.write(requests.get(url, stream=True).raw.read())
-        #     with open(f'foo.mp4', 'rb') as f:
-        #         _stream = BytesIO(f.read())
-        # elif self.__config.is_gif:
-        #     with requests.get(url, stream=True) as r:
-        #         _stream = Image.open(r.raw)
-        # else:
-        #     root_logger.error('No valid input! Neither received a video or gif.')
 
     @property
     def config(self):
