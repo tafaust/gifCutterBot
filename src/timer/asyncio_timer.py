@@ -46,7 +46,7 @@ class PeriodicAsyncIOTimer(AsyncIOTimer):
             args=None, kwargs=None
     ):
         super(PeriodicAsyncIOTimer, self).__init__(
-                timeout=interval, function=function, loop=loop, args=args, kwargs=kwargs
+            timeout=interval, function=function, loop=loop, args=args, kwargs=kwargs
         )
         self._sleep_first = sleep_first
         self._canceled = False

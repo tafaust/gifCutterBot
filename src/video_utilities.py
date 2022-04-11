@@ -69,10 +69,9 @@ def get_vid_duration(stream: BytesIO):
         vid.write(stream.getvalue())
         len_cmd = shlex.split(f'ffprobe -show_entries format=duration -v quiet -of csv="p=0" -i {vid.name}')
         vid_duration = float(
-                sp.run(len_cmd, input=None, shell=True, capture_output=True, check=True, text=True).stdout
+            sp.run(len_cmd, input=None, shell=True, capture_output=True, check=True, text=True).stdout
         ) * 1000
     return vid_duration
-
 
 # def get_frame_rate(stream: BytesIO):
 #     # out = sp.check_output(

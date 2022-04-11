@@ -15,12 +15,12 @@ from src.util.config import USER_AGENT
 class RedditClient:
     def __init__(self):
         self._instance = asyncpraw.Reddit(
-                user_agent=USER_AGENT,
-                client_id=REDDIT_CLIENT_ID,
-                client_secret=REDDIT_CLIENT_SECRET,
-                username=REDDIT_USERNAME,
-                password=REDDIT_PASSWORD,
-                ratelimit_seconds='60000',
+            user_agent=USER_AGENT,
+            client_id=REDDIT_CLIENT_ID,
+            client_secret=REDDIT_CLIENT_SECRET,
+            username=REDDIT_USERNAME,
+            password=REDDIT_PASSWORD,
+            ratelimit_seconds='60000',
         )
 
     async def has_new_message(self) -> bool:

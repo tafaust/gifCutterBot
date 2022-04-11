@@ -15,7 +15,6 @@ def get_gif_duration(image: Image) -> float:
         except EOFError:
             return total_duration_milliseconds / 1000
 
-
 # def cut_gif(img: Image, start: int, end: int = None, watermark=noop_image):
 #     gif = unpack_gif(img)
 #     gif_duration = get_gif_duration(img)
