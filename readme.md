@@ -34,7 +34,7 @@ Dependencies can be installed with `pip install -r requirements.txt` from your p
 
 After that, you can run the bot from the project root directory using the command
 ```shell
-PYTHONPATH=. python redditbot.py
+PYTHONPATH=. python src/main.py
 ```
 
 ## Testing
