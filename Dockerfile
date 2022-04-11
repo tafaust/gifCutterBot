@@ -7,4 +7,4 @@ COPY . .
 RUN pip install -r requirements.txt
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH='.'
-CMD ["python3", "redditbot.py"]
+CMD ["python3", "src/main.py"]
