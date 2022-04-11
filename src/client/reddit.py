@@ -1,6 +1,4 @@
-from os import getenv
 from typing import AsyncIterator
-from typing import Iterator
 from typing import Union
 
 import asyncpraw

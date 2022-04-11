@@ -12,7 +12,6 @@ from src.handler import base
 
 
 class VideoCutHandler(base.BaseCutHandler):
-    # @decorator.create_hook(pre=None, post=base.post_cut_hook)
     def cut(self, stream: BytesIO, config: task.TaskConfig) -> result.Result:
         start_ms = config.start
         end_ms = config.end
@@ -23,15 +22,14 @@ class VideoCutHandler(base.BaseCutHandler):
             duration = video_utilities.get_vid_duration(stream)
         duration_ms = duration * 1000
         target_duration_ms = end_ms - start_ms
-        # multiply duration by 1000 to have it in ms rather than s
         assert 0 < target_duration_ms < duration_ms and end_ms <= duration_ms  # sanity check
         # https://stackoverflow.com/questions/18444194/cutting-the-videos-based-on-start-and-end-time-using-ffmpeg#comment51400781_18449609
         # movflags with empty_moov: https://stackoverflow.com/questions/25411836/ffmpeg-doesnt-work-with-mp4-and-stdout
-        # seed before input is faster but more accurate; after input is slower but more accurate
+        # seed before input is faster but less accurate; after input is slower but more accurate
         cut_cmd = shlex.split(
             f'ffmpeg -i pipe:0 -ss {start_ms / 1000} -movflags empty_moov -t {target_duration_ms / 1000} -c copy -f {ext} pipe:1'
         )
-        # shaky videos converted to gif are huge (larger than 10MB) which makes it hard to upload them
+        # shaky videos converted to gif are huge (larger than 10MB) which makes it hard to upload them later on due to restrictions
         # f'ffmpeg -ss {start_ms / 1000} -t {target_duration_ms / 1000} -i pipe:0 -filter_complex "fps={fps},split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" -y -loop 0 -f gif pipe:1'
         # https://stackoverflow.com/questions/20321116/can-i-pipe-a-io-bytesio-stream-to-subprocess-popen-in-python#comment30326992_20321129
         proc = subprocess.Popen(cut_cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -40,6 +38,7 @@ class VideoCutHandler(base.BaseCutHandler):
         proc.wait()
         response = err.decode()
 
+        # sometimes, subprocess fails with BytesIO and we thus need to store the file temporarily on disk and retry
         if 'partial file' in response:
             # retry with temporary file instead of BytesIO
             with NamedTemporaryFile('wb', suffix=f'.{ext}') as f:

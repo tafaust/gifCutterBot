@@ -1,8 +1,7 @@
-import src
-from . import base
-from . import gif
-from . import video
-from . import test
+from src.handler import base
+from src.handler import gif
+from src.handler import test
+from src.handler import video
 
 __all__ = [
     base.BaseCutHandler.__name__,

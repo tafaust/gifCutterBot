@@ -1,6 +1,3 @@
-from typing import List
-
-from PIL import ImageSequence
 from PIL.Image import Image
 
 
@@ -45,29 +42,28 @@ def get_gif_duration(image: Image) -> float:
 #     return frames_out, target_duration/len(frames_out)
 
 
-def unpack_gif(image: Image) -> List[Image]:
-    frames = []
-    disposal = []
-    for gifFrame in ImageSequence.Iterator(image):
-        disposal.append(gifFrame.disposal_method)
-        frames.append(gifFrame.convert('P'))
-    output = []
-    last_frame = None
-    this_frame = None
-    for i, loadedFrame in enumerate(frames):
-        this_frame = loadedFrame
-        if disposal[i] == 2:
-            if i != 0:
-                last_frame.paste(this_frame, mask=this_frame.convert('RGBA'))
-                output.append(last_frame)
-            else:
-                output.append(this_frame)
-        elif disposal[i] == 1 or disposal[i] == 0:
-            output.append(this_frame)
-        else:
-            raise ValueError('Disposal Methods other than '
-                             '2: Restore to Background, '
-                             '1: Do Not Dispose, and '
-                             '0: No Disposal are supported at this time')
-        last_frame = loadedFrame
-    return output
+# def unpack_gif(image: Image) -> List[Image]:
+#     frames = []
+#     disposal = []
+#     for gifFrame in ImageSequence.Iterator(image):
+#         disposal.append(gifFrame.disposal_method)
+#         frames.append(gifFrame.convert('P'))
+#     output = []
+#     last_frame = None
+#     for i, loadedFrame in enumerate(frames):
+#         this_frame = loadedFrame
+#         if disposal[i] == 2:
+#             if i != 0:
+#                 last_frame.paste(this_frame, mask=this_frame.convert('RGBA'))
+#                 output.append(last_frame)
+#             else:
+#                 output.append(this_frame)
+#         elif disposal[i] == 1 or disposal[i] == 0:
+#             output.append(this_frame)
+#         else:
+#             raise ValueError('Disposal Methods other than '
+#                              '2: Restore to Background, '
+#                              '1: Do Not Dispose, and '
+#                              '0: No Disposal are supported at this time')
+#         last_frame = loadedFrame
+#     return output

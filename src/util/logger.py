@@ -1,7 +1,6 @@
 import logging
 import sys
 
-
 from typing import Union
 
 
@@ -21,10 +20,10 @@ class ColorFormatter(logging.Formatter):
     }
 
     FORMATS = {
-        logging.DEBUG   : format.format(color=default, **common_config),
-        logging.INFO    : format.format(color=grey, **common_config),
-        logging.WARNING : format.format(color=yellow, **common_config),
-        logging.ERROR   : format.format(color=red, **common_config),
+        logging.DEBUG: format.format(color=default, **common_config),
+        logging.INFO: format.format(color=grey, **common_config),
+        logging.WARNING: format.format(color=yellow, **common_config),
+        logging.ERROR: format.format(color=red, **common_config),
         logging.CRITICAL: format.format(color=bold_red, **common_config),
     }
 

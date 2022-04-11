@@ -1,6 +1,7 @@
 import asyncio
-from src.util.logger import root_logger
 from typing import Callable
+
+from src.util.logger import root_logger
 
 
 class AsyncIOTimer(object):

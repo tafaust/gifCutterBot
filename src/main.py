@@ -10,11 +10,14 @@ def start_aio_timer(
         interval: int, callback: Callable, sleep_first: bool = False, loop: asyncio.AbstractEventLoop = None
 ):
     _timer = timer.PeriodicAsyncIOTimer(interval=interval, function=callback, sleep_first=sleep_first, loop=loop)
+    # noinspection PyBroadException
     try:
         _timer.run()
         if loop is None:
             _timer.start_loop()
-    except:
+    except Exception as ex:
+        import logging
+        logging.getLogger(name='AioTimer').debug('Encountered exception.', exc_info=ex)
         _timer.cancel()
         _timer.stop_loop()
 

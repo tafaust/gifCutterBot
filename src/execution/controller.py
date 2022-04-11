@@ -5,21 +5,23 @@ from typing import Union
 
 from asyncpraw.models import Message
 from asyncpraw.reddit import Comment
-# from imgurpython import ImgurClient
 
 import src.execution.task as t
 from src.client.imgur import ImgurClient
-from src.model.result import Result
 from src.client.reddit import RedditClient
 from src.model.execution_mode import ExecutionMode
 from src.model.media_type import MediaType
+from src.model.result import Result
 from src.model.task_state import TaskConfigState
 from src.model.task_state import TaskState
 from src.util import decorator, config
 from src.util.exception import TaskFailureException
+from src.util.logger import cut_logger
 from src.util.logger import root_logger
 from src.util.logger import upload_logger
-from src.util.logger import cut_logger
+
+
+# from imgurpython import ImgurClient
 
 
 def log_broad_exception(err, logger=cut_logger) -> None:
@@ -49,12 +51,12 @@ class AioController(object):
             root_logger.info('Initializing sync imgur client.')
             self.imgur: ImgurClient = ImgurClient(config.IMGUR_CLIENT_ID, config.IMGUR_CLIENT_SECRET)
 
-    async def run(self, *args, **kwargs) -> None:
-        self._init_reddit_client()
-        root_logger.debug('Calling controller.run ...')
-        await self.fetch()
-        await self.work()
-        await self.upload_and_answer()
+    # async def run(self, *args, **kwargs) -> None:
+    #     self._init_reddit_client()
+    #     root_logger.debug('Calling controller.run ...')
+    #     await self.fetch()
+    #     await self.work()
+    #     await self.upload_and_answer()
 
     async def fetch(self) -> None:
         """Must not be called more than every 2 seconds to not violate reddit rate limits.
@@ -117,7 +119,7 @@ class AioController(object):
             return
         else:
             upload_logger.info(f'Uploading result: {_result}')
-        upload_link = await self._upload_to_imgur(result=_result)
+        upload_link = self._upload_to_imgur(result=_result)
         await self._answer_in_reddit(message=_result.message, upload_link=upload_link)
 
     async def _fill_task_queue_from_reddit(self) -> None:
@@ -215,7 +217,7 @@ class AioController(object):
             return _result
 
     # @decorator.run_in_executor
-    async def _upload_to_imgur(self, result: Result) -> str:
+    def _upload_to_imgur(self, result: Result) -> str:
         # self.imgur
         # todo worth to have this async because of io
         # with NamedTemporaryFile(mode='wb', suffix='.gif') as fp:
@@ -235,13 +237,12 @@ class AioController(object):
             }
         res = self.imgur.upload(upload_payload=payload, anon=anon)
         upload_logger.debug(f'Upload to imgur: {res.get("link")}')
-        # todo error handling with res
         return res.get('link')
 
     # @decorator.run_in_executor
     # noinspection PyMethodMayBeStatic
     async def _answer_in_reddit(self, message: Message, upload_link: str) -> None:
-        # todo need a custom result data type to answer the message T_T
+        # todo refactor answer into reddit client
         # reply with link to the just cut gif and mark as unread
         issue_link = f'https://www.reddit.com/message/compose/?to=domac&subject={config.REDDIT_USERNAME}%20issue&message=' \
                      f'Add a link to the gif or comment in your message%2C I%27m not always sure which request is ' \

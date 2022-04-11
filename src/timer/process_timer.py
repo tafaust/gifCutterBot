@@ -1,5 +1,5 @@
-from multiprocessing import Process
 from multiprocessing import Event
+from multiprocessing import Process
 from typing import Callable
 
 

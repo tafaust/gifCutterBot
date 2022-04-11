@@ -1,7 +1,7 @@
 import src.client as client
 import src.execution as execution
-import src.model as model
 import src.handler as handler
+import src.model as model
 import src.timer as timer
 import src.util as util
 

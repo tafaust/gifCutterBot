@@ -5,9 +5,9 @@ from io import BytesIO
 from typing import List
 
 import PIL
+import PIL.GifImagePlugin
 import PIL.Image
 import PIL.ImageSequence
-import PIL.GifImagePlugin
 
 import src.model.result as result
 from src import gif_utilities

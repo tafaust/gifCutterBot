@@ -1,8 +1,9 @@
 import logging
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from typing import Union, Any
 
 import requests
+
 
 # import aiohttp
 # from aiohttp import ClientResponse
