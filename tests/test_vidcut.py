@@ -2,12 +2,10 @@ import io
 import itertools
 import os
 import shutil
-from tempfile import NamedTemporaryFile
 
 import pytest
-from PIL import Image
 
-from src.gif_utilities import get_gif_duration
+
 # from src.video_utilities import cut_video as cut_video_func
 
 

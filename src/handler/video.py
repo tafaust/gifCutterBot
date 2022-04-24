@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import math
 import shlex
 import subprocess
 from io import BytesIO
 from tempfile import NamedTemporaryFile
 
 import src.model.result as result
-from src import video_utilities
+from src.util import video_utilities
 from src.execution import task
 from src.handler import base
 
@@ -20,6 +21,7 @@ class VideoCutHandler(base.BaseCutHandler):
         ext = config.extension
         if duration is None:
             duration = video_utilities.get_vid_duration(stream)
+            end_ms = min(end_ms or math.inf, duration * 1000)  # put a realistic upper bound on end
         duration_ms = duration * 1000
         target_duration_ms = end_ms - start_ms
         assert 0 < target_duration_ms < duration_ms and end_ms <= duration_ms  # sanity check

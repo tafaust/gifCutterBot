@@ -134,7 +134,7 @@ class AioController(object):
 
     async def _reddit_message_to_input_queue(self, message: Message) -> None:
         await message.submission.load()  # fetch submission
-        _task_config = t.TaskConfigFactory.from_message(message=message)
+        _task_config: t.TaskConfig = t.TaskConfigFactory.from_message(message=message)
         root_logger.debug(f'Extracted task config from message: {_task_config}')
         if _task_config.is_state(TaskConfigState.INVALID):
             root_logger.warning('Task config state is invalid!')
@@ -179,7 +179,6 @@ class AioController(object):
             try:
                 result: Result = task.handle()
                 return result
-                # return Result(message=task.config.message, gif=_gif, gif_duration=_gif_duration)
             except TaskFailureException as err:
                 cut_logger.error(f'Task failed: {err}')
             except Exception as err:

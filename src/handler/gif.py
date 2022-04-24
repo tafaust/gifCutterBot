@@ -10,7 +10,7 @@ import PIL.Image
 import PIL.ImageSequence
 
 import src.model.result as result
-from src import gif_utilities
+from src.util import gif_utilities
 from src.execution import task
 from src.handler import base
 from src.model.media_type import MediaType

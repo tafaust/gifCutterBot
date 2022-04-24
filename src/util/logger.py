@@ -36,10 +36,11 @@ class ColorFormatter(logging.Formatter):
 root_logger: logging.Logger
 cut_logger: logging.Logger
 upload_logger: logging.Logger
+task_logger: logging.Logger
 
 
 def setup_logger(level: Union[int, str] = logging.DEBUG):
-    global root_logger, cut_logger, upload_logger
+    global root_logger, cut_logger, upload_logger, task_logger
 
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(logging.DEBUG)
@@ -48,8 +49,9 @@ def setup_logger(level: Union[int, str] = logging.DEBUG):
     root_logger = logging.getLogger(name='gifCutterBot')
     cut_logger = logging.getLogger(name='CutWorker')
     upload_logger = logging.getLogger(name='UploadWorker')
+    task_logger = logging.getLogger(name='TaskWorker')
 
-    for logger in [root_logger, cut_logger, upload_logger]:
+    for logger in [root_logger, cut_logger, upload_logger, task_logger]:
         logger.setLevel(level=level)
         logger.addHandler(handler)
 

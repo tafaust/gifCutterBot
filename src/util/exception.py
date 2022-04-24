@@ -4,3 +4,7 @@ class TaskFailureException(BaseException):
 
 class TaskConfigFailureException(BaseException):
     pass
+
+
+class OembedFailureException(BaseException):
+    pass

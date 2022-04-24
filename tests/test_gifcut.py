@@ -1,10 +1,7 @@
-from tempfile import NamedTemporaryFile
-
 import pytest as pytest
 from PIL import Image
 
 # from src.gif_utilities import cut_gif as cut_gif_func
-from src.gif_utilities import get_gif_duration
 from src.handler.gif import GifCutHandler
 
 gif_handler = GifCutHandler()
