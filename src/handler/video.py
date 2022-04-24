@@ -29,10 +29,8 @@ class VideoCutHandler(base.BaseCutHandler):
         # movflags with empty_moov: https://stackoverflow.com/questions/25411836/ffmpeg-doesnt-work-with-mp4-and-stdout
         # seed before input is faster but less accurate; after input is slower but more accurate
         cut_cmd = shlex.split(
-            f'ffmpeg -i pipe:0 -ss {start_ms / 1000} -movflags empty_moov -t {target_duration_ms / 1000} -c copy -f {ext} pipe:1'
+            f'ffmpeg -i pipe:0 -copyinkf -c:v copy -c:a copy -crf 0 -vcodec h264 -movflags empty_moov -ss {start_ms / 1000} -t {target_duration_ms / 1000} -f {ext} pipe:1'
         )
-        # shaky videos converted to gif are huge (larger than 10MB) which makes it hard to upload them later on due to restrictions
-        # f'ffmpeg -ss {start_ms / 1000} -t {target_duration_ms / 1000} -i pipe:0 -filter_complex "fps={fps},split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" -y -loop 0 -f gif pipe:1'
         # https://stackoverflow.com/questions/20321116/can-i-pipe-a-io-bytesio-stream-to-subprocess-popen-in-python#comment30326992_20321129
         proc = subprocess.Popen(cut_cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
         stream.seek(0)

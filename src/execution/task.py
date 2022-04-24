@@ -198,7 +198,7 @@ class TaskConfig:
             task_logger.error('Failed to obtain the HTML of the oEmbed.')
         soup = BeautifulSoup(html_string, features='html.parser')
         try:
-            # todo proper error handling! this has only been validated with
+            # todo proper error handling! this has only been validated with gfycat
             src_url = parse_qs(urlparse(soup.iframe.get('src'))[4]).get('src')[0]
             another_soup = BeautifulSoup(requests.get(src_url).content, features='html.parser')
             source_tag = another_soup.video.findAll(name='source')[1]
