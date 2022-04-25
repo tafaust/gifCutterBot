@@ -3,5 +3,6 @@
 !*.py
 !src
 !requirements.txt
+!readme.md
 !LICENSE
 !VERSION
