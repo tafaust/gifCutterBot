@@ -1,7 +1,6 @@
 import shlex
 import subprocess
 from io import BytesIO
-from tempfile import NamedTemporaryFile
 
 
 def get_vid_duration(stream: BytesIO) -> float:

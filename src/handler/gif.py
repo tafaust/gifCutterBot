@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import math
 from io import BytesIO
 from typing import List
@@ -10,10 +8,10 @@ import PIL.Image
 import PIL.ImageSequence
 
 import src.model.result as result
-from src.util import gif_utilities
 from src.execution import task
 from src.handler import base
 from src.model.media_type import MediaType
+from src.util import gif_utilities
 
 
 class GifCutHandler(base.BaseCutHandler):

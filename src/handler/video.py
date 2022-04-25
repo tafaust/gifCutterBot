@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import math
 import shlex
 import subprocess
@@ -7,9 +5,9 @@ from io import BytesIO
 from tempfile import NamedTemporaryFile
 
 import src.model.result as result
-from src.util import video_utilities
 from src.execution import task
 from src.handler import base
+from src.util import video_utilities
 
 
 class VideoCutHandler(base.BaseCutHandler):
