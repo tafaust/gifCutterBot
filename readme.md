@@ -2,21 +2,24 @@
 [![Python application](https://github.com/tahesse/gifCutterBot/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/tahesse/gifCutterBot/actions/workflows/python-app.yml)
 [![Docker Image CI](https://github.com/tahesse/gifCutterBot/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/tahesse/gifCutterBot/actions/workflows/docker-image.yml)
 
-# Reddit _gifcutterbot_
+# Reddit _gifcutterbot_ :clapper:
 
 This reddit bot currently runs under [/u/gifcutterbot](https://www.reddit.com/user/gifcutterbot/). 
 
-    Important note: GIFs are animated images without(!) sound. This bot does not handle sound so far.
-
-Purpose of this bot:
+## Purpose of this bot :robot:
 
 You are looking at GIFs and you come across a GIF for which you really only want to see one cut scene from.
 Linking this bot and with your desired start and end time in milliseconds, this bot will provide you with an
 imgur link to your cut scene GIF.
 
-# Development and Contribution
+## Usage :diamond_shape_with_a_dot_inside:
+To cut the GIF or video of a post, simply add your comment
 
-Please contribute to this bot and send descriptive pull requests! :)
+> /u/gifcutterbot start=<your-start-time-in-milliseconds> end=<your-end-time-in-milliseconds>
+
+# Development and Contribution :call_me_hand:
+
+Please contribute to this bot and send descriptive pull requests! 
 
 If you want to development work on the bot, make sure to have a `.env` file sourced with the keys:
 ```
@@ -37,7 +40,7 @@ After that, you can run the bot from the project root directory using the comman
 PYTHONPATH=. python src/main.py
 ```
 
-## Testing
+## Testing :test_tube:
 
 If you want to run the tests, in your project root directory, type
 ```shell
