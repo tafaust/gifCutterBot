@@ -6,12 +6,7 @@ import shutil
 import pytest
 
 
-# from src.video_utilities import cut_video as cut_video_func
-
-
-# 934823
-# 'test.mp4',
-@pytest.fixture(params=itertools.product([0, 350, 1250], [250, 450, 3000], ['test.mov', 'test.webm']))
+@pytest.fixture(params=itertools.product([0, 350, 1250], [250, 450, 3000], ['test.mov', 'test.webm', 'test.mp4']))
 def yield_params(request):
     f = open(f'test_data/{request.param[2]}', 'r+b')
     # f.seek(0)
