@@ -15,7 +15,11 @@ imgur link to your cut scene GIF.
 ## Usage :diamond_shape_with_a_dot_inside:
 To cut the GIF or video of a post, simply add your comment
 
-> /u/gifcutterbot start=<your-start-time-in-milliseconds> end=<your-end-time-in-milliseconds>
+> /u/gifcutterbot start=[time-in-milliseconds] end=[time-in-milliseconds]
+
+For example like this:
+
+> /u/gifcutterbot start=3500 end=9200
 
 # Development and Contribution :call_me_hand:
 
